@@ -31,7 +31,6 @@ const jsOutputDir = 'assets/js/';
 module.exports = {
     context: path.resolve(__dirname, rootDir + '/src'),
     entry: {
-        // vendor: ['jquery', 'gsap'],
         app: rootDir + '/src/App.js',
         style: rootDir + '/scss/all.scss'
     },

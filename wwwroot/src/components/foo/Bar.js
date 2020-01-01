@@ -1,6 +1,7 @@
 class Bar {
     greeting() {
-        return `Hello Mother's Fucker!!!!`;
+        return `Hello , Joe Hsu!`;
     };
 }
+
 export default Bar;

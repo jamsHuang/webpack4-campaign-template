@@ -4,9 +4,13 @@ const webpack = require('webpack');
 * SA|SC|C/SS Plugin
 * [FixStyleOnlyEntriesPlugin] 解決Webpack編譯SASS會自動產生 *.js 的問題
 * [MiniCssExtractPlugin] 打包SASS及最小化CSS
+* [AutoPreFixer] 預先編譯SCSS至瀏覽器可用版本
+* [CSSNano] 壓縮打包後的CSS檔案
 * */
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const AutoPreFixer = require('autoprefixer');
+const CSSNano = require('cssnano');
 /*
 * Webpack Plugin
 * [CleanWebpackPlugin] 清除./dist資料夾
@@ -27,12 +31,24 @@ const jsOutputDir = 'assets/js/';
 module.exports = {
     context: path.resolve(__dirname, rootDir + '/src'),
     entry: {
+        // vendor: ['jquery', 'gsap'],
         app: rootDir + '/src/App.js',
         style: rootDir + '/scss/all.scss'
     },
     output: {
         filename: jsOutputDir + (devMode ? '[name].js' : '[name].[hash:8].js'),
         path: path.resolve(__dirname, 'dist'),
+    },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/](jquery)[\\/]/,
+                    name: 'vendor',
+                    chunks: 'all',
+                }
+            }
+        }
     },
     module: {
         rules: [
@@ -56,9 +72,23 @@ module.exports = {
                         }
                     },
                     'css-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: [
+                                AutoPreFixer({
+                                    cascade: false
+                                }),
+                                CSSNano({
+                                    normalizeWhitespace: false,
+                                    discardComments: {removeAll: true}
+                                })
+                            ]
+                        }
+                    },
                     'resolve-url-loader',
                     'sass-loader',
-                ],
+                ]
             },
             {
                 test: /\.html$/,
@@ -83,6 +113,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.HashedModuleIdsPlugin(),
         new CleanWebpackPlugin(),
         new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin({
@@ -90,9 +121,8 @@ module.exports = {
             allChunks: true
         }),
         new HtmlWebpackPlugin({
-            hash: false,
             inject: true,
-            chunks: ['style', 'app'],
+            chunks: ['style', 'app', 'vendor'],
             removeComments: true,
             template: rootDir + '/index.html',
             filename: 'index.html',

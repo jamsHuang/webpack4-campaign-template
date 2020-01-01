@@ -1,4 +1,7 @@
-import Bar from "./foo/Bar";
+import * as $ from 'jquery';
+import Bar from "./components/foo/Bar";
+
+console.log($);
 
 window.addEventListener('load', () => {
     document.body.appendChild(component());

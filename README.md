@@ -1,4 +1,4 @@
-# es6-wepack-template
+# es6-campaign-template
 獻給 Joe Hsu
 
 

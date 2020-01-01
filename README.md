@@ -1,4 +1,4 @@
-# es6-campaign-template
+# webpack4-campaign-template
 獻給 Joe Hsu
 
 
